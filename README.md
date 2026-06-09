@@ -1,6 +1,6 @@
-# ONPE Monitor 🗳️
+# ONPE Monitor
 
-Monitorea los resultados de la segunda vuelta en tiempo real y te manda actualizaciones a Telegram cada 15 minutos.
+Monitorea los resultados de la segunda vuelta y manda actualizaciones a Telegram cada 15 minutos.
 
 ## Deploy en Vercel
 
@@ -15,19 +15,13 @@ git push -u origin main
 
 ### 2. Importa en Vercel
 - Ve a https://vercel.com/new
-- Importa el repo de GitHub
+- Importa el repo
 - En "Environment Variables" agrega:
 
 | Variable | Valor |
 |---|---|
-| `TELEGRAM_USER` | `@tuusuario` |
-| `CALLMEBOT_API_KEY` | La key que te dio @CallMeBot_txtbot |
-| `CRON_SECRET` | Cualquier string secreto (ej: `mi-clave-segura-123`) |
+| `TELEGRAM_USER` | tu usuario de Telegram sin @ (ej: thxrstx) |
+| `CRON_SECRET` | cualquier string secreto (ej: mi-clave-123) |
 
 ### 3. Deploy
-Vercel detecta el `vercel.json` y activa el cron automáticamente.
-El endpoint `/api/monitor` se ejecutará cada 15 minutos.
-
-## Variables de entorno
-
-Copia `.env.example` a `.env` para desarrollo local.
+Vercel detecta el vercel.json y activa el cron cada 15 minutos automáticamente.

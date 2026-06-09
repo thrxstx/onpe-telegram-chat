@@ -1,8 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const CONFIG = {
-  telegramUser: process.env.TELEGRAM_USER ?? "",
-  callmebotApiKey: process.env.CALLMEBOT_API_KEY ?? "",
+  telegramUser: process.env.TELEGRAM_USER ?? "thxrstx", // tu usuario de Telegram sin @
   onpeUrl:
     "https://resultadosegundavuelta.onpe.gob.pe/presentacion-backend/resumen-general/participantes?idEleccion=10&tipoFiltro=eleccion",
 };
@@ -59,8 +58,7 @@ function parseONPE(data: any): ResultadoONPE {
 
 async function sendTelegram(mensaje: string): Promise<void> {
   const encoded = encodeURIComponent(mensaje);
-  const user = encodeURIComponent(CONFIG.telegramUser);
-  const url = `https://api.callmebot.com/telegram.php?user=${user}&text=${encoded}&apikey=${CONFIG.callmebotApiKey}`;
+  const url = `http://api.callmebot.com/text.php?user=${CONFIG.telegramUser}&text=${encoded}`;
   await fetch(url);
 }
 
@@ -73,7 +71,7 @@ const nombreCorto = (n: string) => {
 
 function formatMensaje(r: ResultadoONPE, final = false): string {
   const sorted = [...r.candidatos].sort((a, b) => b.porcentaje - a.porcentaje);
-  if (sorted.length < 2) return "⚠️ No se pudieron leer los datos de la ONPE.";
+  if (sorted.length < 2) return "No se pudieron leer los datos de la ONPE.";
 
   const [primero, segundo] = sorted;
   const difPct = (primero.porcentaje - segundo.porcentaje).toFixed(3);
@@ -81,14 +79,14 @@ function formatMensaje(r: ResultadoONPE, final = false): string {
   const hora = new Date().toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
 
   const lines = [
-    `🗳 ONPE - Segunda Vuelta | ${hora}`,
-    `📊 Votos emitidos contados: ${r.porcentajeAvance}%`,
+    `ONPE - Segunda Vuelta | ${hora}`,
+    `Avance: ${r.porcentajeAvance}%`,
     ``,
-    `🟢 ${nombreCorto(primero.nombre)}: ${primero.porcentaje}% (${primero.votos.toLocaleString("es-PE")} votos)`,
-    `🔴 ${nombreCorto(segundo.nombre)}: ${segundo.porcentaje}% (${segundo.votos.toLocaleString("es-PE")} votos)`,
+    `RS ${nombreCorto(primero.nombre)}: ${primero.porcentaje}% (${primero.votos.toLocaleString("es-PE")} votos)`,
+    `KF ${nombreCorto(segundo.nombre)}: ${segundo.porcentaje}% (${segundo.votos.toLocaleString("es-PE")} votos)`,
     ``,
-    `📌 Diferencia: ${difPct} pts | ${difVotos} votos`,
-    ...(final ? [``, `✅ Conteo al 100% completado.`] : []),
+    `Diferencia: ${difPct} pts | ${difVotos} votos`,
+    ...(final ? [``, `Conteo al 100% completado.`] : []),
   ];
 
   return lines.join("\n");
@@ -97,7 +95,6 @@ function formatMensaje(r: ResultadoONPE, final = false): string {
 // ---- Handler principal ------------------------------------
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Seguridad: solo acepta llamadas del cron de Vercel o con token correcto
   const authHeader = req.headers["authorization"];
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
