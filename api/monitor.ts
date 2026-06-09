@@ -24,9 +24,13 @@ async function fetchResultados(): Promise<ResultadoONPE | null> {
   try {
     const res = await fetch(CONFIG.onpeUrl, {
       headers: {
-        Accept: "application/json",
-        "User-Agent": "Mozilla/5.0",
-        Referer: "https://resultadosegundavuelta.onpe.gob.pe/",
+        Accept: "application/json, text/plain, */*",
+        "Accept-Language": "es-419,es;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        Referer: "https://resultadosegundavuelta.onpe.gob.pe/main/resumen",
+        Origin: "https://resultadosegundavuelta.onpe.gob.pe",
       },
     });
 
