@@ -4,9 +4,7 @@
   "scripts": {
     "dev": "vercel dev"
   },
-  "dependencies": {
-    "@vercel/node": "^3.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "typescript": "^5.0.0"
   }

@@ -1,5 +1,3 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-
 const CONFIG = {
   telegramUser: process.env.TELEGRAM_USER ?? "thxrstx", // tu usuario de Telegram sin @
   onpeUrl:
@@ -48,7 +46,7 @@ function parseONPE(data: any): ResultadoONPE {
   }));
 
   const porcentajeAvance = parseFloat(
-    (data.data?.[0]?.porcentajeVotosEmitidos ?? 0).toFixed(2)
+    (data.data?.[0]?.porcentajeVotosEmitidos ?? 0).toFixed(2),
   );
 
   return { candidatos, porcentajeAvance };
@@ -76,7 +74,10 @@ function formatMensaje(r: ResultadoONPE, final = false): string {
   const [primero, segundo] = sorted;
   const difPct = (primero.porcentaje - segundo.porcentaje).toFixed(3);
   const difVotos = (primero.votos - segundo.votos).toLocaleString("es-PE");
-  const hora = new Date().toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
+  const hora = new Date().toLocaleTimeString("es-PE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const lines = [
     `ONPE - Segunda Vuelta | ${hora}`,
@@ -94,25 +95,14 @@ function formatMensaje(r: ResultadoONPE, final = false): string {
 
 // ---- Handler principal ------------------------------------
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const authHeader = req.headers["authorization"];
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+// Reemplaza el handler de Vercel por esto:
+const resultado = await fetchResultados();
 
-  const resultado = await fetchResultados();
-
-  if (!resultado) {
-    return res.status(500).json({ error: "No se pudo obtener datos de la ONPE" });
-  }
-
-  const msg = formatMensaje(resultado, resultado.porcentajeAvance >= 100);
-  await sendTelegram(msg);
-
-  return res.status(200).json({
-    ok: true,
-    avance: resultado.porcentajeAvance,
-    candidatos: resultado.candidatos,
-  });
+if (!resultado) {
+  console.error("No se pudo obtener datos de la ONPE");
+  process.exit(1);
 }
+
+const msg = formatMensaje(resultado, resultado.porcentajeAvance >= 100);
+await sendTelegram(msg);
+console.log("Enviado:", msg);
