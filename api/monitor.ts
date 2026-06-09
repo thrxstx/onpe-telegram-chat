@@ -1,3 +1,4 @@
+export {};
 const CONFIG = {
   telegramUser: process.env.TELEGRAM_USER ?? "thxrstx", // tu usuario de Telegram sin @
   onpeUrl:
