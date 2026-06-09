@@ -42,7 +42,7 @@ async function fetchResultados(): Promise<ResultadoONPE | null> {
     const data = JSON.parse(text);
     return parseONPE(data);
   } catch (err) {
-    console.error("Error fetch:", err);
+    console.error("Error fetch:", String(err));
     return null;
   }
 }
