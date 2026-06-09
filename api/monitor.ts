@@ -34,11 +34,15 @@ async function fetchResultados(): Promise<ResultadoONPE | null> {
       },
     });
 
-    if (!res.ok) return null;
+    console.log("Status ONPE:", res.status);
+    const text = await res.text();
+    console.log("Respuesta ONPE:", text.slice(0, 300));
 
-    const data = await res.json();
+    if (!res.ok) return null;
+    const data = JSON.parse(text);
     return parseONPE(data);
-  } catch {
+  } catch (err) {
+    console.error("Error fetch:", err);
     return null;
   }
 }
